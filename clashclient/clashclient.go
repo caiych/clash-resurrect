@@ -5,18 +5,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
 	"net/url"
 
 	"gopkg.in/resty.v1"
 )
 
-var (
-	client = http.DefaultClient
-)
-
 // Client encapsulates a client of clash API.
 type Client struct {
+	Host string
 	Port int
 }
 
@@ -26,7 +22,7 @@ type clashAPI struct {
 }
 
 type rootResponse struct {
-	hello string `json:"hello"`
+	Hello string `json:"hello"`
 }
 
 // GetRoot sends requests to root path of clash API.
@@ -38,7 +34,7 @@ func (c *Client) GetRoot(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	if i.(*rootResponse).hello != "clash" {
+	if i.(*rootResponse).Hello != "clash" {
 		return errors.New("what?")
 	}
 	return nil

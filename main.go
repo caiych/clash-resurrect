@@ -30,6 +30,7 @@ func main() {
 
 func mainLoop() error {
 	c := clashclient.Client{
+		Host: "localhost",
 		Port: *clashPort,
 	}
 	ctx := context.Background()
