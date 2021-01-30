@@ -1,7 +1,6 @@
 package main
 
 import (
-	"clash-resurrect/clashclient"
 	"context"
 	"flag"
 	"fmt"
@@ -9,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/caiych/clash-resurrect/clashclient"
 	"github.com/cakturk/go-netstat/netstat"
 )
 
