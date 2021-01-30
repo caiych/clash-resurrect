@@ -23,9 +23,25 @@ func main() {
 	if err := prepareCheckpointDir(); err != nil {
 		log.Fatal(err)
 	}
-	if err := mainLoop(); err != nil {
+
+	p, err := findProcessByPort(*clashPort)
+	if err != nil {
 		log.Fatal(err)
 	}
+	fs, err := os.Stat(fmt.Sprintf("/proc/%d/attr/fscreate", p.Pid))
+	if err != nil {
+		log.Fatal(err)
+	}
+	lc, err := time.LoadLocation("Asia/Shanghai")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print(fs.ModTime().In(lc))
+	log.Print(time.Now().In(lc))
+
+	// if err := mainLoop(); err != nil {
+	// 	log.Fatal(err)
+	// }
 }
 
 func mainLoop() error {
@@ -68,27 +84,31 @@ func prepareCheckpointDir() error {
 	return nil
 }
 
-func killClash(port int) error {
+func findProcessByPort(port int) (*os.Process, error) {
 	ss, err := netstat.TCP6Socks(func(ste *netstat.SockTabEntry) bool {
 		return ste.LocalAddr.Port == uint16(port)
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 	pids := make(map[int]bool)
 	for _, p := range ss {
 		pids[p.Process.Pid] = true
 	}
 	if len(pids) != 1 {
-		return fmt.Errorf("unexpected number of processes with port %d: %v", port, len(pids))
+		return nil, fmt.Errorf("unexpected number of processes with port %d: %v", port, len(pids))
 	}
 
 	for pid := range pids {
-		p, err := os.FindProcess(pid)
-		if err != nil {
-			return err
-		}
-		return p.Kill()
+		return os.FindProcess(pid)
 	}
-	return nil
+	return nil, nil
+}
+
+func killClash(port int) error {
+	p, err := findProcessByPort(port)
+	if err != nil {
+		return err
+	}
+	return p.Kill()
 }
