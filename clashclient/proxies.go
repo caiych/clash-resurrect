@@ -1,6 +1,11 @@
 package clashclient
 
-import "context"
+import (
+	"context"
+	"fmt"
+
+	"gopkg.in/resty.v1"
+)
 
 // Proxies defines proxy config.
 type Proxies struct {
@@ -24,4 +29,13 @@ func (c *Client) GetProxies(ctx context.Context) (*Proxies, error) {
 		return nil, err
 	}
 	return i.(*Proxies), nil
+}
+
+// UpdateProxySelection update childProxyName to proxyName(which should be a Selector)
+func (c *Client) UpdateProxySelection(ctx context.Context, proxyName, childProxyName string) error {
+	path := fmt.Sprintf("/proxies/%s", proxyName)
+	_, err := resty.R().SetContext(ctx).SetBody(map[string]interface{}{
+		"name": childProxyName,
+	}).Put(c.url(path))
+	return err
 }
