@@ -3,6 +3,7 @@
 ## What it does now
 
 Check clash RESTful API and see if it's still responding, if it's not -- kill it. 
+(Name after [tmux-plugins/tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect))
 NOTE: This is depending on other serivce(e.g. supervisor) to bring it up again.
 
 ### Why?
